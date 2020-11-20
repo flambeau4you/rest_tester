@@ -1,0 +1,18 @@
+end_point: http://192.168.0.100:8080
+
+# Exported file in Postman.
+postman_file: postman.json
+
+auth_url: /auth/tokens
+auth_body_file: auth.json
+
+# It will be changed wht the END_POINT.
+end_point_var: "{{domain}}"
+auth_token_title: X-Auth-Token
+
+# HTTPS files
+crt_file: 
+key_file: 
+
+# These replace the path varialbes in URLs.
+path_vars: 
