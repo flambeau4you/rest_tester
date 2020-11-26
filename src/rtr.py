@@ -273,7 +273,9 @@ def request(postman, parameters, verbose):
     # Authentication
     token = None
 
-    if config['auth_url'] and not url.startswith(end_point + config['auth_url']):
+    if config['auth_token_value']:
+        token = config['auth_token_value']
+    elif config['auth_url'] and not url.startswith(end_point + config['auth_url']):
         token = request_auth(end_point)
     
     headers = api.get_headers()

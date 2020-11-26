@@ -46,6 +46,7 @@ auth_url: /auth/tokens
 auth_body_file: auth.json
 end_point_var: "{{domain}}"
 auth_token_title: X-Auth-Token
+auth_token_value:
 path_vars:
 ```
 
@@ -54,6 +55,7 @@ path_vars:
 1. auth_body_file: A JSON file as the request body to authenticate.
 1. end_point_var: The variable name to be changed with the END_POINT.
 1. auth_token_title: The token title name in headers.
+1. auth_token_value: Use this token value instead of calling authentication.
 1. path_vars: Variables will be replaces in URLs.
 It is JSON format.
 
