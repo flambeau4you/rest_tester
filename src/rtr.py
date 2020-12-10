@@ -253,7 +253,7 @@ def request(postman, parameters, verbose):
     url = api.get_url().replace(config['end_point_var'], end_point)
     url = re.sub(r'\?.*', '', url)
     
-    # Replaces varialbles by config.
+    # Replaces variables by configuration.
     if 'path_vars' in config and config['path_vars']:
         path_vars = json.loads(config['path_vars'])
         if path_vars:
@@ -265,7 +265,7 @@ def request(postman, parameters, verbose):
         url = re.sub(r'{[^/]*}', parameters[param_index], url, 1)
         param_index += 1
     
-    # Query paramters
+    # Query parameters
     if len(parameters) > param_index and parameters[param_index].find('=') > 0:
         url += '?' + parameters[param_index]
         param_index += 1
