@@ -1,23 +1,22 @@
 # Project Overview
 
-
 ## Introduction
 
 * Name: REST Tester
-* Abbrebation Name: RTR
+* Abbreviation Name: RTR
 * Order: Jung Bong-Hwa
-* User: Jung Bong-Hwa
+* User: Software developers
 * Begin Date: 2020-07-15
 * Goal Date: Go on.
 
 ### Goal
 
-Test REST APIs by commmand lines.
+Test REST APIs by command lines.
 
-## Compositon
+## Composition
 
-```
-Terminal -> REST Web Server
+```txt
+Shell -> REST Web Server
 ```
 
 ## Features
@@ -27,7 +26,7 @@ Terminal -> REST Web Server
 
 ## Users
 
-Jung Bong-Hwa mostly usese it.
+Developers of REST APIs.
 
 ## Operating Environment
 
@@ -35,7 +34,7 @@ Any shell or terminal to run Python scripts.
 
 ## Development
 
-### Langugange and Tools
+### Language and Tools
 
 Use Python.
 

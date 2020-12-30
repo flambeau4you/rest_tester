@@ -18,7 +18,7 @@ Use capital letters to key names.
 
 ## Postman JSON Structure
 
-1. There are three formats, old one, 2.0, and lastest 2.1 formats.
+1. There are three formats, old one, 2.0, and latest 2.1 formats.
 Support all the formats.
 1. If APIs aren't ordered by folders, don't care about that.
 Don't sort.

@@ -19,7 +19,7 @@ It useful to use command for speed.
 Install Python if it was installed.
 And install additional modules as below.
 
-```
+```bash
 pip install requests
 pip install pyyaml
 ```
@@ -39,7 +39,7 @@ If the APIs don't have any folders, export as version 1 (old) format.
 
 Edit the rtr_config.py and auth.json to the web service system.
 
-```
+```yaml
 end_point: http://192.168.0.100:8080
 postman_file: postman.json
 auth_url: /auth/tokens
@@ -50,7 +50,7 @@ auth_token_value:
 path_vars:
 ```
 
-1. end_point: Prefix part of the URL. There are a protocal, host address, and port number. 
+1. end_point: Prefix part of the URL. There are a protocol, host address, and port number.
 1. postman_file: Exported Postman JSON file. The 2.1 format is not supported.
 1. auth_body_file: A JSON file as the request body to authenticate.
 1. end_point_var: The variable name to be changed with the END_POINT.
@@ -61,7 +61,7 @@ It is JSON format.
 
 Below is a example of the path_vars.
 
-```
+```yaml
 path_vars: |
   {
     '{{project_id}}': '1234'
@@ -91,7 +91,7 @@ The case is insensitive.
 
 The outputs are as below.
 
-```
+```bash
 $ ./rtr.py -n user
  394. List User: GET /v1/users?name=&address=
  395. Create User: POST /v1/users
@@ -119,7 +119,7 @@ The query parameters are one string regardless of count.
 
 Output Example:
 
-```
+```bash
 $ ./rtr 394 'address=wall street&name=jane'
 GET http://192.168.0.100:8080/v1/users
 Response Code: 200
@@ -153,7 +153,7 @@ The request body is always last.
 
 Output Example:
 
-```
+```bash
 $ ./rtr 395 user.json
 POST http://192.168.0.100:8080/v1/users
 Response Code: 201
@@ -175,7 +175,7 @@ Syntax:
 
 Output Example:
 
-```
+```sample
 $ ./rtr.py -e 395
 {
   "user": {
@@ -187,8 +187,8 @@ $ ./rtr.py -e 395
 
 Save as a file:
 
-```
-$ ./rtr.py -e 395 > user.json
+```bash
+./rtr.py -e 395 > user.json
 ```
 
 ## Documentation

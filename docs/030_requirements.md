@@ -14,12 +14,11 @@
 
 ## CLI [CI001]
 
-1. Path variables, query parameters, and request body are inputed by command line parameters.
+1. Path variables, query parameters, and request body are inputted by command line parameters.
 1. The request body is passed as a file.
 1. Make response JSON is pretty.
 
 ## Configuration [CF001]
 
-1. Set connection information as a seperated file.
+1. Set connection information as a separated file.
 1. Set Postman file in the configuration file.
-
