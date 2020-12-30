@@ -1,5 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+# Copyright 2020 Jung Bong-Hwa
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import argparse
 import json
 import re
@@ -10,25 +25,24 @@ import yaml
 
 from postman import create_postman
 
-
 # Defines arguments.
 parser = argparse.ArgumentParser(description='REST Tester')
-parser.add_argument("-n", "--name", action='store_true', 
+parser.add_argument("-n", "--name", action='store_true',
                     help="Find APIs by the name.")
-parser.add_argument("-u", "--url", action='store_true', 
-                    help="Find APIs by the URL.")
-parser.add_argument("-a", "--all", action='store_true', 
+parser.add_argument("-u", "--uri", action='store_true',
+                    help="Find APIs by the URI.")
+parser.add_argument("-a", "--all", action='store_true',
                     help="Find APIs by all items.")
-parser.add_argument("-l", "--list", action='store_true', 
+parser.add_argument("-l", "--list", action='store_true',
                     help="Show all APIs.")
-parser.add_argument("-e", "--export", action='store_true', 
+parser.add_argument("-e", "--export", action='store_true',
                     help="Export request body sample by index.")
-parser.add_argument("-r", "--root", action='store_true', 
+parser.add_argument("-r", "--root", action='store_true',
                     help="Request root.")
-parser.add_argument("-v", "--verbose", action='store_true', 
+parser.add_argument("-v", "--verbose", action='store_true',
                     help="Show all headers.")
-parser.add_argument("-c", "--config",  
-                    help="Use the config file.")
+parser.add_argument("-c", "--config",
+                    help="Use the configuration file.")
 parser.add_argument('parameters', metavar='parameter', nargs='*',
                     help="[index] | [keyword] [path_var1 path_var2 ...] [query_params] [request_file] Index 0 is calling root.")
 
@@ -37,11 +51,12 @@ def print_api(index, api):
     """
     Prints API information.
     """
-    url = api.get_url().replace(config['end_point_var'], '');
+    uri = api.get_uri().replace(config['end_point_var'], '');
     print("%4s. [%s] %s: %s %s" 
-                  %(index, api.get_folder_name().encode('utf-8').decode(),
-                    api.get_name().encode('utf-8').decode(), 
-                    api.get_method().encode('utf-8').decode(), url.encode('utf-8').decode()))
+                  % (index, api.get_folder_name(),
+                    api.get_name(),
+                    api.get_method(), uri))
+
 
 def find_by_name(postman, key):
     """
@@ -51,16 +66,18 @@ def find_by_name(postman, key):
         api = postman.get_api(i)
         if re.search(key, api.get_name(), re.IGNORECASE):
             print_api(i, api)
+
         
-def find_by_url(postman, key):
+def find_by_uri(postman, key):
     """
-    Finds APIs by the URL.
+    Finds APIs by the URI.
     """
     for i in range(0, postman.count_apis()):
         api = postman.get_api(i)
-        url = api.get_url().replace(config['end_point_var'], '');
-        if re.search(key, url, re.IGNORECASE):
+        uri = api.get_uri().replace(config['end_point_var'], '');
+        if re.search(key, uri, re.IGNORECASE):
             print_api(i, api)
+
         
 def find_by_all(postman, key):
     """
@@ -68,12 +85,13 @@ def find_by_all(postman, key):
     """
     for i in range(0, postman.count_apis()):
         api = postman.get_api(i)
-        url = api.get_url().replace(config['end_point_var'], '');
-        if (re.search(key, url, re.IGNORECASE) 
+        uri = api.get_uri().replace(config['end_point_var'], '');
+        if (re.search(key, uri, re.IGNORECASE) 
             or re.search(key, api.get_name(), re.IGNORECASE) 
             or re.search(key, api.get_request_body_sample(), re.IGNORECASE)
             or re.search(key, api.get_folder_name(), re.IGNORECASE)):
             print_api(i, api)
+
         
 def print_all_apis(postman):
     """
@@ -82,18 +100,19 @@ def print_all_apis(postman):
     for i in range(0, postman.count_apis()):
         api = postman.get_api(i)
         print_api(i, api)
+
         
 def print_response(response, verbose=False):
     """
-    Prints responsed body.
+    Prints responded body.
     """
     if response.status_code and verbose:
-        print("Response Code: %s" %(str(response.status_code)))
+        print("Response Code: %s" % (str(response.status_code)))
         
     if verbose:
         print("Response Headers:")
         for key in response.headers:
-            print("%s: %s" %(key, response.headers[key]))
+            print("%s: %s" % (key, response.headers[key]))
         
     if response.text:
         if verbose:
@@ -104,6 +123,7 @@ def print_response(response, verbose=False):
             print(json.dumps(json.loads(response.text), indent=2))
         else:
             print(response.text);
+
     
 def get_cert():
     """
@@ -114,13 +134,14 @@ def get_cert():
     else:
         return None
 
+
 def request_auth(end_point):
     """
     Authenticates user and password.
     """
     path = config['auth_body_file']
 
-    if not config['auth_url'] or not path:
+    if not config['auth_uri'] or not path:
         return None
     
     with open(config['auth_body_file'], 'r') as handle:
@@ -128,8 +149,8 @@ def request_auth(end_point):
     
     headers = {'Content-Type': 'application/json'}
     try:
-        r = requests.post(url = end_point + config['auth_url'], 
-                          headers = headers, json = body, verify = False, cert = get_cert())
+        r = requests.post(uri=end_point + config['auth_uri'],
+                          headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Authentication Error: ")
         print(e)
@@ -145,10 +166,11 @@ def request_auth(end_point):
         print('Authentication failed.')
         print_response(r, True)
         sys.exit(1)
+
     
-def request_post(url, headers, body_file):
+def request_post(uri, headers, body_file):
     """
-    Requests POST URL.
+    Requests POST uri.
     """
     body = None
     if body_file:
@@ -158,28 +180,30 @@ def request_post(url, headers, body_file):
         print("Request Body:\n" + json.dumps(body, indent=2))
     
     try:
-        r = requests.post(url = url, headers = headers, json = body, verify = False, cert = get_cert())
+        r = requests.post(uri=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling POST Error: ")
         print(e)
         sys.exit(1)
     return r
 
-def request_get(url, headers):
+
+def request_get(uri, headers):
     """
-    Requests GET URL.
+    Requests GET uri.
     """
     try:
-        r = requests.get(url = url, headers = headers, verify = False, cert = get_cert()) 
+        r = requests.get(uri=uri, headers=headers, verify=False, cert=get_cert()) 
     except ConnectionError as e:
         print("Calling GET Error: ")
         print(e)
         sys.exit(1)
     return r
+
     
-def request_put(url, headers, body_file):
+def request_put(uri, headers, body_file):
     """
-    Requests PUT URL.
+    Requests PUT uri.
     """
     body = None
     if body_file:
@@ -188,16 +212,17 @@ def request_put(url, headers, body_file):
         headers['Content-Type'] = 'application/json'
         
     try:
-        r = requests.put(url = url, headers = headers, json = body, verify = False, cert = get_cert())
+        r = requests.put(uri=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling PUT Error: ")
         print(e)
         sys.exit(1)
     return r
 
-def request_patch(url, headers, body_file):
+
+def request_patch(uri, headers, body_file):
     """
-    Requets PATCH URL.
+    Requests PATCH uri.
     """
     body = None
     if body_file:
@@ -210,16 +235,17 @@ def request_patch(url, headers, body_file):
             headers['Content-Type'] = 'application/xml'
         
     try:
-        r = requests.patch(url = url, headers = headers, json = body, verify = False, cert = get_cert())
+        r = requests.patch(uri=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling PATCH Error: ")
         print(e)
         sys.exit(1)
     return r
 
-def request_delete(url, headers, body_file):
+
+def request_delete(uri, headers, body_file):
     """
-    Requests DELETE URL.
+    Requests DELETE uri.
     """
     body = None
     if body_file:
@@ -232,12 +258,13 @@ def request_delete(url, headers, body_file):
             headers['Content-Type'] = 'application/xml'
 
     try:
-        r = requests.delete(url = url, headers = headers, json = body, verify = False, cert = get_cert())
+        r = requests.delete(uri=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling DELETE Error: ")
         print(e)
         sys.exit(1)
     return r
+
 
 def request(postman, parameters, verbose):
     """
@@ -250,24 +277,24 @@ def request(postman, parameters, verbose):
     param_index += 1
 
     api = postman.get_api(index)
-    url = api.get_url().replace(config['end_point_var'], end_point)
-    url = re.sub(r'\?.*', '', url)
+    uri = api.get_uri().replace(config['end_point_var'], end_point)
+    uri = re.sub(r'\?.*', '', uri)
     
     # Replaces variables by configuration.
     if 'path_vars' in config and config['path_vars']:
         path_vars = json.loads(config['path_vars'])
         if path_vars:
             for key in path_vars:
-                url = re.sub(key, path_vars[key], url, 1)
+                uri = re.sub(key, path_vars[key], uri, 1)
 
     # Replaces path variables.
-    while len(parameters) > param_index and url.find('{') >= 0:
-        url = re.sub(r'{[^/]*}', parameters[param_index], url, 1)
+    while len(parameters) > param_index and uri.find('{') >= 0:
+        uri = re.sub(r'{[^/]*}', parameters[param_index], uri, 1)
         param_index += 1
     
     # Query parameters
     if len(parameters) > param_index and parameters[param_index].find('=') > 0:
-        url += '?' + parameters[param_index]
+        uri += '?' + parameters[param_index]
         param_index += 1
 
     # Authentication
@@ -275,7 +302,7 @@ def request(postman, parameters, verbose):
 
     if config['auth_token_value']:
         token = config['auth_token_value']
-    elif config['auth_url'] and not url.startswith(end_point + config['auth_url']):
+    elif config['auth_uri'] and not uri.startswith(end_point + config['auth_uri']):
         token = request_auth(end_point)
     
     headers = api.get_headers()
@@ -283,47 +310,49 @@ def request(postman, parameters, verbose):
         headers[config['auth_token_title']] = token
                 
     if verbose:
-        print("curl -k -X %s %s -H '%s: %s' 2>/dev/null | python -m json.tool" %(api.get_method(), url, config['auth_token_title'], token))
+        print("curi -k -X %s %s -H '%s: %s' 2>/dev/null | python -m json.tool" % (api.get_method(), uri, config['auth_token_title'], token))
         print("Request Headers:")
         for key in headers:
-            print("%s: %s" %(key, headers[key]))
+            print("%s: %s" % (key, headers[key]))
 
     if api.get_method() == 'GET':
-        r = request_get(url, headers)
+        r = request_get(uri, headers)
     elif api.get_method() == 'POST':
         if len(parameters) > param_index:
-            r = request_post(url, headers, parameters[param_index])
+            r = request_post(uri, headers, parameters[param_index])
             param_index += 1
         else:
-            r = request_post(url, headers, None)
+            r = request_post(uri, headers, None)
     elif api.get_method() == 'DELETE':
         if len(parameters) > param_index:
-            r = request_delete(url, headers, parameters[param_index])
+            r = request_delete(uri, headers, parameters[param_index])
             param_index += 1
         else:
-            r = request_delete(url, headers, None)
+            r = request_delete(uri, headers, None)
     elif api.get_method() == 'PUT':
         if len(parameters) > param_index:
-            r = request_put(url, headers, parameters[param_index])
+            r = request_put(uri, headers, parameters[param_index])
             param_index += 1
         else:
-            r = request_put(url, headers, None)
+            r = request_put(uri, headers, None)
     elif api.get_method() == 'PATCH':
         if len(parameters) > param_index:
-            r = request_patch(url, headers, parameters[param_index])
+            r = request_patch(uri, headers, parameters[param_index])
             param_index += 1
         else:
-            r = request_patch(url, headers, None)
+            r = request_patch(uri, headers, None)
     
     print_response(r, verbose)
 
+
 def request_root(verbose):
     """
-    Calls root URL.
+    Calls root uri.
     """
-    print("%s %s" %("GET", config['end_point'] + "/"))
+    print("%s %s" % ("GET", config['end_point'] + "/"))
     r = request_get(config['end_point'] + "/", None)
     print_response(r, verbose);
+
 
 def export_request_sample(postman, index):
     """
@@ -331,6 +360,7 @@ def export_request_sample(postman, index):
     """
     api = postman.get_api(index)
     print(api.get_request_body_sample())
+
 
 # Main
 args = parser.parse_args()
@@ -348,8 +378,8 @@ postman = create_postman(config['postman_file'])
 
 if args.name:
     find_by_name(postman, args.parameters[0])
-elif args.url:
-    find_by_url(postman, args.parameters[0])
+elif args.uri:
+    find_by_uri(postman, args.parameters[0])
 elif args.all:
     find_by_all(postman, args.parameters[0])
 elif args.list:

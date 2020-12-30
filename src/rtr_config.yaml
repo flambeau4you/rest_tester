@@ -1,13 +1,18 @@
+# It will appended to the API URI
 end_point: http://192.168.0.100:8080
 
 # Exported file in Postman.
 postman_file: postman.json
 
-auth_url: /auth/tokens
+# If not seted, don't authenticate.
+auth_uri: /auth/tokens
 auth_body_file: auth.json
+# Never expired token value. If seted, use this without authentication.
+auth_token_value:  
 
-# It will be changed wht the END_POINT.
+# It will be changed with the END_POINT value.
 end_point_var: "{{domain}}"
+# It will be used in requesting headers.
 auth_token_title: X-Auth-Token
 
 # HTTPS files
@@ -15,4 +20,5 @@ crt_file:
 key_file: 
 
 # These replace the path varialbes in URLs.
+# Example: { "{{TENANT_ID}}": "f217", "{{COMPUTE_URI}}": "http://192.168.0.220:8774/v2.1" }
 path_vars: 
