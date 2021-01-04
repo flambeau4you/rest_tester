@@ -366,7 +366,7 @@ def export_request_sample(postman, index):
 args = parser.parse_args()
 
 # Reads configuration.
-config_path = 'rtr_config.yaml'
+config_path = 'config.yaml'
 if args.config:
     config_path = args.config
     

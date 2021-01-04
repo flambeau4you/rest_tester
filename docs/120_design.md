@@ -1,10 +1,6 @@
 # Design
 
-## Configuration File
-
-Use capital letters to key names.
-
-### Common Items
+## Configuration Items
 
 1. End point
 1. Postman file
