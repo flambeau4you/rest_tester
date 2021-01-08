@@ -361,32 +361,34 @@ def export_request_sample(postman, index):
     api = postman.get_api(index)
     print(api.get_request_body_sample())
 
-
-# Main
-args = parser.parse_args()
-
-# Reads configuration.
-config_path = 'config.yaml'
-if args.config:
-    config_path = args.config
+if __name__ == '__main__':
+    # Main
+    args = parser.parse_args()
     
-with open(config_path) as f:
-    config = yaml.load(f, Loader=yaml.FullLoader)
-
-# Reads postman file.
-postman = create_postman(config['postman_file']) 
-
-if args.name:
-    find_by_name(postman, args.parameters[0])
-elif args.uri:
-    find_by_uri(postman, args.parameters[0])
-elif args.all:
-    find_by_all(postman, args.parameters[0])
-elif args.list:
-    print_all_apis(postman)
-elif args.export:
-    export_request_sample(postman, args.parameters[0])
-elif args.root:
-    request_root(args.verbose)
-else:
-    request(postman, args.parameters, args.verbose)
+    # Reads configuration.
+    config_path = 'config.yaml'
+    if args.config:
+        config_path = args.config
+        
+    with open(config_path) as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    
+    # Reads postman file.
+    postman = create_postman(config['postman_file']) 
+    
+    if args.name:
+        find_by_name(postman, args.parameters[0])
+    elif args.uri:
+        find_by_uri(postman, args.parameters[0])
+    elif args.all:
+        find_by_all(postman, args.parameters[0])
+    elif args.list:
+        print_all_apis(postman)
+    elif args.export:
+        export_request_sample(postman, args.parameters[0])
+    elif args.root:
+        request_root(args.verbose)
+    elif len(args.parameters) == 0:
+        parser.print_help(sys.stderr)
+    else:
+        request(postman, args.parameters, args.verbose)
