@@ -149,7 +149,7 @@ def request_auth(end_point):
     
     headers = {'Content-Type': 'application/json'}
     try:
-        r = requests.post(uri=end_point + config['auth_uri'],
+        r = requests.post(url=end_point + config['auth_uri'],
                           headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Authentication Error: ")
@@ -180,7 +180,7 @@ def request_post(uri, headers, body_file):
         print("Request Body:\n" + json.dumps(body, indent=2))
     
     try:
-        r = requests.post(uri=uri, headers=headers, json=body, verify=False, cert=get_cert())
+        r = requests.post(url=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling POST Error: ")
         print(e)
@@ -193,7 +193,7 @@ def request_get(uri, headers):
     Requests GET uri.
     """
     try:
-        r = requests.get(uri=uri, headers=headers, verify=False, cert=get_cert()) 
+        r = requests.get(url=uri, headers=headers, verify=False, cert=get_cert()) 
     except ConnectionError as e:
         print("Calling GET Error: ")
         print(e)
@@ -212,7 +212,7 @@ def request_put(uri, headers, body_file):
         headers['Content-Type'] = 'application/json'
         
     try:
-        r = requests.put(uri=uri, headers=headers, json=body, verify=False, cert=get_cert())
+        r = requests.put(url=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling PUT Error: ")
         print(e)
@@ -235,7 +235,7 @@ def request_patch(uri, headers, body_file):
             headers['Content-Type'] = 'application/xml'
         
     try:
-        r = requests.patch(uri=uri, headers=headers, json=body, verify=False, cert=get_cert())
+        r = requests.patch(url=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling PATCH Error: ")
         print(e)
@@ -258,7 +258,7 @@ def request_delete(uri, headers, body_file):
             headers['Content-Type'] = 'application/xml'
 
     try:
-        r = requests.delete(uri=uri, headers=headers, json=body, verify=False, cert=get_cert())
+        r = requests.delete(url=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling DELETE Error: ")
         print(e)
