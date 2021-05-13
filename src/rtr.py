@@ -310,7 +310,7 @@ def request(postman, parameters, verbose):
         headers[config['auth_token_title']] = token
                 
     if verbose:
-        print("curi -k -X %s %s -H '%s: %s' 2>/dev/null | python -m json.tool" % (api.get_method(), uri, config['auth_token_title'], token))
+        print("curl -k -X %s %s -H '%s: %s' 2>/dev/null | python -m json.tool" % (api.get_method(), uri, config['auth_token_title'], token))
         print("Request Headers:")
         for key in headers:
             print("%s: %s" % (key, headers[key]))
