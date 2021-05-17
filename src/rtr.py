@@ -29,6 +29,8 @@ from postman import create_postman
 parser = argparse.ArgumentParser(description='REST Tester')
 parser.add_argument("-n", "--name", action='store_true',
                     help="Find APIs by the name.")
+parser.add_argument("-nr", "--name_request", action='store_true',
+                    help="Find APIs by the name and request it.")
 parser.add_argument("-u", "--uri", action='store_true',
                     help="Find APIs by the URI.")
 parser.add_argument("-a", "--all", action='store_true',
@@ -67,6 +69,15 @@ def find_by_name(postman, key):
         if re.search(key, api.get_name(), re.IGNORECASE):
             print_api(i, api)
 
+def find_index_by_name(postman, key):
+    """
+    Finds APIs by the name.
+    """
+    for i in range(0, postman.count_apis()):
+        api = postman.get_api(i)
+        if re.search(key, api.get_name(), re.IGNORECASE):
+            return i
+    return -1
         
 def find_by_uri(postman, key):
     """
@@ -378,6 +389,11 @@ if __name__ == '__main__':
     
     if args.name:
         find_by_name(postman, args.parameters[0])
+    elif args.name_request:
+        index = find_index_by_name(postman, args.parameters[0])
+        if index != -1:
+            args.parameters[0] = index
+            request(postman, args.parameters, args.verbose)
     elif args.uri:
         find_by_uri(postman, args.parameters[0])
     elif args.all:
