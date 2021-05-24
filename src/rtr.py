@@ -18,12 +18,14 @@
 import argparse
 import json
 import re
+import sys
+
 import requests
 from requests.exceptions import ConnectionError
-import sys
 import yaml
 
 from postman import create_postman
+
 
 # Defines arguments.
 parser = argparse.ArgumentParser(description='REST Tester')
@@ -31,6 +33,8 @@ parser.add_argument("-n", "--name", action='store_true',
                     help="Find APIs by the name.")
 parser.add_argument("-nr", "--name_request", action='store_true',
                     help="Find APIs by the name and request it.")
+parser.add_argument("-ne", "--name_export", action='store_true',
+                    help="Find APIs by the name and export body sample.")
 parser.add_argument("-u", "--uri", action='store_true',
                     help="Find APIs by the URI.")
 parser.add_argument("-a", "--all", action='store_true',
@@ -41,6 +45,8 @@ parser.add_argument("-e", "--export", action='store_true',
                     help="Export request body sample by index.")
 parser.add_argument("-r", "--root", action='store_true',
                     help="Request root.")
+parser.add_argument("-m", "--multipart",
+                    help="Request as multipart with the title.")
 parser.add_argument("-v", "--verbose", action='store_true',
                     help="Show all headers.")
 parser.add_argument("-c", "--config",
@@ -190,14 +196,27 @@ def request_post(uri, headers, body_file):
         headers['Content-Type'] = 'application/json'
         print("Request Body:\n" + json.dumps(body, indent=2))
     
-    try:
+    try:        
         r = requests.post(url=uri, headers=headers, json=body, verify=False, cert=get_cert())
     except ConnectionError as e:
         print("Calling POST Error: ")
         print(e)
         sys.exit(1)
     return r
-
+    
+def request_post_multipart(uri, headers, multipart_title, multipart_file):
+    """
+    Requests POST uri as multipart.
+    """
+    try:
+        f = open(multipart_file,"rb")
+        multipart_body = { multipart_title : (multipart_file, f, "application/x-binary") }
+        r = requests.post(url=uri, headers=headers, files=multipart_body, verify=False, cert=get_cert())
+    except ConnectionError as e:
+        print("Calling POST Error: ")
+        print(e)
+        sys.exit(1)
+    return r
 
 def request_get(uri, headers):
     """
@@ -277,7 +296,7 @@ def request_delete(uri, headers, body_file):
     return r
 
 
-def request(postman, parameters, verbose):
+def request(postman, parameters, multipart, verbose):
     """
     Requests Postman item.
     """
@@ -330,7 +349,10 @@ def request(postman, parameters, verbose):
         r = request_get(uri, headers)
     elif api.get_method() == 'POST':
         if len(parameters) > param_index:
-            r = request_post(uri, headers, parameters[param_index])
+            if multipart:
+                r = request_post_multipart(uri, headers, multipart, parameters[param_index])
+            else:
+                r = request_post(uri, headers, parameters[param_index])
             param_index += 1
         else:
             r = request_post(uri, headers, None)
@@ -393,7 +415,17 @@ if __name__ == '__main__':
         index = find_index_by_name(postman, args.parameters[0])
         if index != -1:
             args.parameters[0] = index
-            request(postman, args.parameters, args.verbose)
+            request(postman, args.parameters, args.multipart, args.verbose)
+        else:
+            print("API is not found!")
+            sys.exit(1)
+    elif args.name_export:
+        index = find_index_by_name(postman, args.parameters[0])
+        if index != -1:
+            export_request_sample(postman, index)
+        else:
+            print("API is not found!")
+            sys.exit(1)
     elif args.uri:
         find_by_uri(postman, args.parameters[0])
     elif args.all:
@@ -407,4 +439,4 @@ if __name__ == '__main__':
     elif len(args.parameters) == 0:
         parser.print_help(sys.stderr)
     else:
-        request(postman, args.parameters, args.verbose)
+        request(postman, args.parameters, args.multipart, args.verbose)
