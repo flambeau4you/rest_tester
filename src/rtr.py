@@ -249,6 +249,20 @@ def request_put(uri, headers, body_file):
         sys.exit(1)
     return r
 
+def request_put_multipart(uri, headers, multipart_title, multipart_file):
+    """
+    Requests PUT uri as multipart.
+    """
+    try:
+        f = open(multipart_file,"rb")
+        multipart_body = { multipart_title : (multipart_file, f, "application/x-binary") }
+        r = requests.put(url=uri, headers=headers, files=multipart_body, verify=False, cert=get_cert())
+    except ConnectionError as e:
+        print("Calling PUT Error: ")
+        print(e)
+        sys.exit(1)
+    return r
+
 
 def request_patch(uri, headers, body_file):
     """
@@ -364,7 +378,10 @@ def request(postman, parameters, multipart, verbose):
             r = request_delete(uri, headers, None)
     elif api.get_method() == 'PUT':
         if len(parameters) > param_index:
-            r = request_put(uri, headers, parameters[param_index])
+            if multipart:
+                r = request_put_multipart(uri, headers, multipart, parameters[param_index])
+            else:
+                r = request_put(uri, headers, parameters[param_index])
             param_index += 1
         else:
             r = request_put(uri, headers, None)
