@@ -209,7 +209,10 @@ def request_post_multipart(uri, headers, multipart_title, multipart_file):
     Requests POST uri as multipart.
     """
     try:
-        f = open(multipart_file,"rb")
+        if multipart_file != '':
+            f = open(multipart_file, "rb")
+        else:
+            f = None
         multipart_body = { multipart_title : (multipart_file, f, "application/x-binary") }
         r = requests.post(url=uri, headers=headers, files=multipart_body, verify=False, cert=get_cert())
     except ConnectionError as e:
@@ -254,7 +257,10 @@ def request_put_multipart(uri, headers, multipart_title, multipart_file):
     Requests PUT uri as multipart.
     """
     try:
-        f = open(multipart_file,"rb")
+        if multipart_file != '':
+            f = open(multipart_file, "rb")
+        else:
+            f = None
         multipart_body = { multipart_title : (multipart_file, f, "application/x-binary") }
         r = requests.put(url=uri, headers=headers, files=multipart_body, verify=False, cert=get_cert())
     except ConnectionError as e:
@@ -291,7 +297,10 @@ def request_patch_multipart(uri, headers, multipart_title, multipart_file):
     Requests PATCH uri as multipart.
     """
     try:
-        f = open(multipart_file,"rb")
+        if multipart_file != '':
+            f = open(multipart_file, "rb")
+        else:
+            f = None
         multipart_body = { multipart_title : (multipart_file, f, "application/x-binary") }
         r = requests.patch(url=uri, headers=headers, files=multipart_body, verify=False, cert=get_cert())
     except ConnectionError as e:
